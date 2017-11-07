@@ -33,7 +33,7 @@ def softmax(x):
         ### YOUR CODE HERE
         x = [row - np.max(row) for row in x]
         e = np.exp(x)
-        x = e / np.sum(e, axis=1)
+        x = e / np.sum(e, axis=1).reshape(orig_shape[0], -1)
         ### END YOUR CODE
     else:
         # Vector
