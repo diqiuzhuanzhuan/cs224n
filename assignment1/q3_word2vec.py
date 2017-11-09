@@ -15,7 +15,7 @@ def normalizeRows(x):
     """
 
     ### YOUR CODE HERE
-    raise NotImplementedError
+    x = x / np.sqrt(np.sum(x**2, axis=1)).reshape(-1, 1)
     ### END YOUR CODE
 
     return x
