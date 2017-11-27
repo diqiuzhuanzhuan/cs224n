@@ -58,7 +58,16 @@ def softmaxCostAndGradient(predicted, target, outputVectors, dataset):
     """
 
     ### YOUR CODE HERE
-    raise NotImplementedError
+
+    t = np.dot(outputVectors, predicted)
+    y = softmax(t)
+    y_label = np.zeros(y.shape)
+    y_label[target] = 1
+    cost = -1.0 * np.log(y[target])
+    err = y - y_label
+    gradPred = np.dot(outputVectors.T, err)
+    grad = np.dot(err, predicted.T)
+
     ### END YOUR CODE
 
     return cost, gradPred, grad
@@ -96,7 +105,14 @@ def negSamplingCostAndGradient(predicted, target, outputVectors, dataset,
     indices.extend(getNegativeSamples(target, dataset, K))
 
     ### YOUR CODE HERE
-    raise NotImplementedError
+    y = np.dot(outputVectors, predicted)
+    neg_indices = indices[1:]
+    cost = -1 * np.log(sigmoid(y[target])) - 1 * np.sum(np.log(-1.0 * sigmoid(y[neg_indices])))
+    err = 1 / sigmoid(y[target]) * sigmoid_grad(y[target]) - np.sum( -1 * 1 / sigmoid(y[neg_indices]) * sigmoid_grad(y[neg_indices]))
+    err = (1 - sigmoid(y[target])) - np.sum(sigmoid(y[neg_indices]) - 1)
+    grad = np.dot(err, predicted.T)
+    gradPred = np.dot(outputVectors.T, err)
+
     ### END YOUR CODE
 
     return cost, gradPred, grad
@@ -131,7 +147,7 @@ def skipgram(currentWord, C, contextWords, tokens, inputVectors, outputVectors,
     gradOut = np.zeros(outputVectors.shape)
 
     ### YOUR CODE HERE
-    raise NotImplementedError
+#    raise NotImplementedError
     ### END YOUR CODE
 
     return cost, gradIn, gradOut
@@ -155,7 +171,7 @@ def cbow(currentWord, C, contextWords, tokens, inputVectors, outputVectors,
     gradOut = np.zeros(outputVectors.shape)
 
     ### YOUR CODE HERE
-    raise NotImplementedError
+#    raise NotImplementedError
     ### END YOUR CODE
 
     return cost, gradIn, gradOut
