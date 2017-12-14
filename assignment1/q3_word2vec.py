@@ -58,15 +58,14 @@ def softmaxCostAndGradient(predicted, target, outputVectors, dataset):
     """
 
     ### YOUR CODE HERE
-
-    t = np.dot(outputVectors, predicted)
+    t = np.dot(predicted, outputVectors.T)
     y = softmax(t)
     y_label = np.zeros(y.shape)
     y_label[target] = 1
     cost = -1.0 * np.log(y[target])
     err = y - y_label
-    gradPred = np.dot(outputVectors.T, err)
-    grad = np.dot(err, predicted.T)
+    gradPred = np.dot(err, outputVectors)
+    grad = np.dot(predicted.reshape(1, -1).T, err.reshape(1, -1)).T
 
     ### END YOUR CODE
 
@@ -103,15 +102,22 @@ def negSamplingCostAndGradient(predicted, target, outputVectors, dataset,
     # wish to match the autograder and receive points!
     indices = [target]
     indices.extend(getNegativeSamples(target, dataset, K))
+    neg_indices = indices[1:]
 
     ### YOUR CODE HERE
-    y = np.dot(outputVectors, predicted)
-    neg_indices = indices[1:]
-    cost = -1 * np.log(sigmoid(y[target])) - 1 * np.sum(np.log(-1.0 * sigmoid(y[neg_indices])))
-    err = 1 / sigmoid(y[target]) * sigmoid_grad(y[target]) - np.sum( -1 * 1 / sigmoid(y[neg_indices]) * sigmoid_grad(y[neg_indices]))
-    err = (1 - sigmoid(y[target])) - np.sum(sigmoid(y[neg_indices]) - 1)
-    grad = np.dot(err, predicted.T)
-    gradPred = np.dot(outputVectors.T, err)
+    y = outputVectors.dot(predicted)
+    cost = -np.log(sigmoid(y[target])) - np.sum(np.log(sigmoid(-y[neg_indices])))
+
+    opp_sig = (1 - sigmoid(-y[neg_indices]))
+    gradPred = (sigmoid(y[target]) - 1) * outputVectors[target] + sum(
+        opp_sig[:, np.newaxis] * outputVectors[neg_indices])
+
+    grad = np.zeros_like(outputVectors)
+    grad[target] = (sigmoid(y[target]) - 1) * predicted
+
+    for k in indices[1:]:
+        grad[k] += (1.0 - sigmoid(-np.dot(outputVectors[k], predicted))) * predicted
+
 
     ### END YOUR CODE
 
@@ -147,7 +153,13 @@ def skipgram(currentWord, C, contextWords, tokens, inputVectors, outputVectors,
     gradOut = np.zeros(outputVectors.shape)
 
     ### YOUR CODE HERE
-#    raise NotImplementedError
+    currentIndex = tokens[currentWord]
+    for word in contextWords:
+        target = tokens[word]
+        _cost, _gradIn, _gradOut = word2vecCostAndGradient(inputVectors[currentIndex], target, outputVectors, dataset)
+        cost += _cost
+        gradIn[currentIndex] += _gradIn
+        gradOut += _gradOut
     ### END YOUR CODE
 
     return cost, gradIn, gradOut
