@@ -48,8 +48,14 @@ def getSentenceFeatures(tokens, wordVectors, sentence):
 
     sentVector = np.zeros((wordVectors.shape[1],))
 
+
     ### YOUR CODE HERE
-    raise NotImplementedError
+    ids = [ tokens[i] for i in sentence ]
+    for i in ids:
+        sentVector += wordVectors[i]
+
+    sentVector /= len(sentence) * 1.0
+
     ### END YOUR CODE
 
     assert sentVector.shape == (wordVectors.shape[1],)
@@ -87,7 +93,7 @@ def chooseBestModel(results):
     bestResult = None
 
     ### YOUR CODE HERE
-    raise NotImplementedError
+    bestResult = max(results, key=lambda x: x['dev'])
     ### END YOUR CODE
 
     return bestResult
