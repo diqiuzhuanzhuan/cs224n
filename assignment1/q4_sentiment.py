@@ -69,7 +69,9 @@ def getRegularizationValues():
     """
     values = None   # Assign a list of floats in the block below
     ### YOUR CODE HERE
-    raise NotImplementedError
+
+    values = [ np.exp(i) for i in range(-80, 0, 4) ]
+
     ### END YOUR CODE
     return sorted(values)
 
